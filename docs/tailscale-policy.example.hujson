@@ -1,0 +1,81 @@
+// DuddyNet — example Tailscale policy (ACL) file.
+//
+// Paste/merge into your tailnet's Access Controls in the Tailscale admin console
+// (https://login.tailscale.com/admin/acls). HuJSON (JSON with comments/trailing
+// commas) is what the console expects.
+//
+// GOALS enforced here (Tailscale is DuddyNet's FIRST security boundary):
+//   1. Your phone can reach ONLY the duddynet-agent node, ONLY on its API port.
+//   2. The duddynet-agent node can reach ONLY the specific home LAN devices and
+//      ports you choose (via its advertised subnet route).
+//   3. Admin devices may reach more, for maintenance.
+//   4. Nothing is exposed to the public internet (no Funnel anywhere).
+//
+// Replace the example emails/IPs/tags with your own.
+
+{
+  "tagOwners": {
+    "tag:duddynet-agent": ["autogroup:admin"],
+    "tag:home-lan":       ["autogroup:admin"],
+  },
+
+  "groups": {
+    "group:admins": ["drduddy@gmail.com"],
+  },
+
+  // Hosts make rules readable. Use your real LAN IPs.
+  "hosts": {
+    "router":  "192.168.1.1",
+    "nas":     "192.168.1.10",
+    "main-pc": "192.168.1.20",
+    "pi":      "192.168.1.30",
+  },
+
+  "acls": [
+    // 1) Your phone (any of your own devices) -> the agent's API port only.
+    {
+      "action": "accept",
+      "src":    ["autogroup:member"],
+      "dst":    ["tag:duddynet-agent:8765"],
+    },
+
+    // 2) The agent -> selected LAN devices on selected ports ONLY.
+    //    These are the services DuddyNet curates. Nothing else on the LAN is
+    //    reachable through the subnet route.
+    {
+      "action": "accept",
+      "src":    ["tag:duddynet-agent"],
+      "dst": [
+        "router:80,443",      // router admin UI
+        "nas:5000,5001,445",  // NAS web UI + SMB
+        "main-pc:3389,9",     // RDP + Wake-on-LAN (UDP/9)
+        "pi:22,8123",         // SSH + Home Assistant
+      ],
+    },
+
+    // 3) Admins -> everything on the home subnet, for maintenance.
+    {
+      "action": "accept",
+      "src":    ["group:admins"],
+      "dst":    ["192.168.1.0/24:*"],
+    },
+  ],
+
+  // Auto-approve the agent advertising the home subnet route, so you don't have
+  // to click "approve" after every agent restart. Only the agent tag may do it.
+  "autoApprovers": {
+    "routes": {
+      "192.168.1.0/24": ["tag:duddynet-agent"],
+    },
+  },
+
+  // Optional: restrict who can use SSH via Tailscale SSH (not required by DuddyNet).
+  "ssh": [
+    {
+      "action": "accept",
+      "src":    ["group:admins"],
+      "dst":    ["tag:duddynet-agent"],
+      "users":  ["autogroup:nonroot"],
+    },
+  ],
+}

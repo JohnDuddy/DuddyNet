@@ -1,0 +1,48 @@
+# DuddyNet agent — systemd unit.
+#
+# Install:
+#   sudo cp duddynet-agent /usr/local/bin/
+#   sudo useradd --system --no-create-home --shell /usr/sbin/nologin duddynet || true
+#   sudo mkdir -p /etc/duddynet /var/lib/duddynet
+#   sudo /usr/local/bin/duddynet-agent init                 # writes /etc/duddynet/config.yaml
+#   sudo chown -R duddynet:duddynet /var/lib/duddynet
+#   sudo cp deploy/systemd/duddynet-agent.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now duddynet-agent
+#
+# Logs:  journalctl -u duddynet-agent -f
+
+[Unit]
+Description=DuddyNet home agent (Tailscale-only remote access)
+Documentation=https://github.com/duddynet/duddynet
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=duddynet
+Group=duddynet
+ExecStart=/usr/local/bin/duddynet-agent serve --config /etc/duddynet/config.yaml
+Restart=on-failure
+RestartSec=5
+
+# --- Hardening (defense in depth) ---
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/duddynet
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+# Wake-on-LAN sends a UDP broadcast; CAP_NET_BROADCAST keeps that working under
+# the locked-down profile. Remove if you do not use WOL.
+AmbientCapabilities=CAP_NET_BROADCAST
+CapabilityBoundingSet=CAP_NET_BROADCAST
+
+[Install]
+WantedBy=multi-user.target

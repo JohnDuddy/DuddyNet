@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base theme; Compose drives the actual colors via MaterialTheme. This
+         only needs to exist for the Activity/launch. -->
+    <style name="Theme.DuddyNet" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">@color/ic_launcher_background</item>
+        <item name="android:windowBackground">@color/black</item>
+    </style>
+</resources>

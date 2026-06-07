@@ -1,0 +1,49 @@
+# ---- Secrets / local config (NEVER commit) ----
+.env
+*.env
+!.env.example
+config.yaml
+config.local.yaml
+/etc/duddynet/
+*.token
+*.key
+*.pem
+secrets/
+
+# ---- Go agent ----
+/agent/bin/
+/agent/dist/
+*.exe
+*.test
+*.out
+coverage.txt
+duddynet-agent
+duddynet-agent.exe
+# Local runtime data (DB / logs)
+*.db
+*.db-journal
+data/
+audit.log
+
+# ---- Android ----
+/android/.gradle/
+/android/build/
+/android/app/build/
+/android/captures/
+/android/local.properties
+/android/.idea/
+/android/*.iml
+/android/.kotlin/
+*.apk
+*.aab
+*.keystore
+*.jks
+keystore.properties
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+*.iml

@@ -1,0 +1,56 @@
+# DuddyNet agent configuration (example).
+#
+# Copy this to the OS-specific config path and edit:
+#   Linux:   /etc/duddynet/config.yaml
+#   Windows: %ProgramData%\DuddyNet\config.yaml
+#
+# Or generate a starter file with: duddynet-agent init
+#
+# SECURITY: This file contains NO secrets. App tokens are created at runtime via
+# `duddynet-agent pair` and stored hashed in the database. There are no Tailscale
+# auth keys or API tokens here — those live only in the Tailscale client/console.
+
+# Address the HTTP API binds to. The agent is meant to be reached over Tailscale.
+# Recommended hardening (see docs/SECURITY.md):
+#   - Bind to the Tailscale interface IP (e.g. 100.x.y.z), OR
+#   - Bind 0.0.0.0 and use the OS firewall to allow the port only from 100.64.0.0/10.
+# When running with -tags tsnet the agent ignores the LAN entirely and listens on
+# the tailnet directly.
+listen_address: "0.0.0.0"
+listen_port: 8765
+
+# Your home LAN in CIDR form. Used for subnet-aware features (WOL broadcast,
+# scan-lan). MUST be configurable per the project requirements.
+lan_subnet: "192.168.1.0/24"
+
+# CORS allowed origins for browser clients. The Android app is a NATIVE client
+# and does not need CORS, so leave empty (most secure).
+allowed_origins: []
+
+# Where device/service/token/audit data is stored (JSON file in the MVP).
+database_path: "/var/lib/duddynet/duddynet.json"
+
+# Structured agent log file (also echoed to stderr/journald).
+log_path: "/var/lib/duddynet/audit.log"
+
+# Whether `duddynet-agent pair` codes can be exchanged for tokens.
+pairing_enabled: true
+
+# Issued app tokens expire after this many days.
+token_expiration_days: 90
+
+# When true, ALL mutating endpoints are refused regardless of token scope
+# (a global panic-brake / "look but don't touch" mode).
+read_only_default: false
+
+# Defense-in-depth source IP allowlist (Tailscale ACLs remain the primary
+# boundary). The Tailscale CGNAT range is 100.64.0.0/10; add your LAN if you also
+# reach the agent locally. Leave empty to allow any source (rely on Tailscale).
+allowed_ip_ranges:
+  - "100.64.0.0/10"
+  - "192.168.1.0/24"
+
+# ---- Optional: tsnet mode (only honored in builds compiled with -tags tsnet) ----
+# When enabled the agent joins your tailnet as its own application node.
+tsnet_mode: false
+tsnet_hostname: "duddynet-agent"
