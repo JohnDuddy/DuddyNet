@@ -1,9 +1,9 @@
 package net.duddy.duddynet.ui.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Devices
-import androidx.compose.material.icons.filled.ListAlt
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -29,7 +29,7 @@ val bottomTabs = listOf(
     BottomTab(Routes.DASHBOARD, "Home", Icons.Filled.Dashboard),
     BottomTab(Routes.DEVICES, "Devices", Icons.Filled.Devices),
     BottomTab(Routes.WOL, "Wake", Icons.Filled.PowerSettingsNew),
-    BottomTab(Routes.LOGS, "Logs", Icons.Filled.ListAlt),
+    BottomTab(Routes.LOGS, "Logs", Icons.AutoMirrored.Filled.ListAlt),
     BottomTab(Routes.SETTINGS, "Settings", Icons.Filled.Settings),
 )
 
