@@ -54,7 +54,10 @@ func Default() *Config {
 		PairingEnabled:      true,
 		TokenExpirationDays: 90,
 		ReadOnlyDefault:     false,
-		AllowedIPRanges:     []string{"192.168.1.0/24"},
+		// Allow the Tailscale CGNAT range (how clients normally connect) plus the
+		// default LAN. Tailscale ACLs remain the primary boundary; this is a
+		// defense-in-depth source-IP backstop.
+		AllowedIPRanges:     []string{"100.64.0.0/10", "192.168.1.0/24"},
 		TsnetMode:           false,
 		TsnetHostname:       "duddynet-agent",
 	}
